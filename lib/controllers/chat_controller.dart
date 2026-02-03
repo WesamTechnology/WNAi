@@ -21,8 +21,7 @@ class ChatController extends GetxController {
   var currentModel = AIModels.availableModels.first.obs;
   var currentSessionId = "".obs;
 
-  // Reply State
-  var replyToMessage = Rxn<Message>(); // The message currently being replied to
+  var replyToMessage = Rxn<Message>();
 
   // Sessions History
   var sessions = <ChatSession>[].obs;
@@ -194,16 +193,41 @@ class ChatController extends GetxController {
   }
 
   Future<void> _generateImage(String prompt) async {
-    final imageUrl = AIService.generateImageUrl(prompt);
-    final botMessage = Message(
+    // Add a temporary "generating" message
+    final loadingMessage = Message(
       id: const Uuid().v4(),
-      text: "Here is your image for: \"$prompt\"",
+      text:
+          "⏳ جاري إنشاء الصورة...\n\n🤖 نستخدم AI Horde المجاني\nقد يستغرق الأمر من 30 ثانية إلى دقيقتين\n\n\"$prompt\"",
       isUser: false,
       timestamp: DateTime.now(),
       modelName: currentModel.value.name,
-      imageUrl: imageUrl,
     );
-    _addMessage(botMessage);
+    _addMessage(loadingMessage);
+
+    try {
+      // Use the async method with fallback for better reliability
+      final imageUrl = await AIService.generateImageWithFallback(prompt);
+
+      // Remove loading message
+      messages.removeWhere((m) => m.id == loadingMessage.id);
+
+      // Add the actual image message
+      final botMessage = Message(
+        id: const Uuid().v4(),
+        text: "🎨 تم إنشاء الصورة: \"$prompt\"\n\n💡 اضغط مطولاً لحفظ الصورة",
+        isUser: false,
+        timestamp: DateTime.now(),
+        modelName: currentModel.value.name,
+        imageUrl: imageUrl,
+      );
+      _addMessage(botMessage);
+    } catch (e) {
+      // Remove loading message on error
+      messages.removeWhere((m) => m.id == loadingMessage.id);
+      _addErrorMessage(
+        "❌ فشل في إنشاء الصورة.\nتأكد من اتصالك بالإنترنت وحاول مرة أخرى.",
+      );
+    }
   }
 
   // Utilities

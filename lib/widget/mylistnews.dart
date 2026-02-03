@@ -12,18 +12,17 @@ class Mylistnews extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use tag to have separate states for each category
     final NewsController newsController = Get.put(
       NewsController(),
       tag: category,
     );
 
-    // Initial fetch if needed
+
     if (newsController.articles.isEmpty && newsController.isLoading.value) {
       newsController.getNews(category);
     }
 
-    // Create a dummy article for skeleton loading
+
     final ArticleModel dummyArticle = ArticleModel(
       image: "https://via.placeholder.com/150",
       title: "Loading News Title Placeholder line 1",

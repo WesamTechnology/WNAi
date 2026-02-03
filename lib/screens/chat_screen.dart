@@ -494,20 +494,83 @@ class _MessageBubble extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
                     message.imageUrl!,
+                    fit: BoxFit.cover,
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;
+                      double? progress;
+                      if (loadingProgress.expectedTotalBytes != null) {
+                        progress =
+                            loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!;
+                      }
                       return Container(
-                        height: 200,
+                        height: 250,
                         width: double.infinity,
-                        color: Colors.grey[300],
-                        child: const Center(child: CircularProgressIndicator()),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(
+                              value: progress,
+                              color: colorScheme.primary,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              "جاري تحميل الصورة...",
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 12,
+                              ),
+                            ),
+                            if (progress != null)
+                              Text(
+                                "${(progress * 100).toInt()}%",
+                                style: TextStyle(
+                                  color: Colors.grey[500],
+                                  fontSize: 10,
+                                ),
+                              ),
+                          ],
+                        ),
                       );
                     },
                     errorBuilder: (context, error, stackTrace) {
-                      return const SizedBox(
-                        height: 150,
-                        child: Center(
-                          child: Icon(Icons.broken_image, color: Colors.grey),
+                      return Container(
+                        height: 180,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.red[50],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.red.shade200),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              color: Colors.red[300],
+                              size: 40,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              "فشل تحميل الصورة",
+                              style: TextStyle(
+                                color: Colors.red[400],
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "تحقق من اتصال الإنترنت",
+                              style: TextStyle(
+                                color: Colors.red[300],
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     },

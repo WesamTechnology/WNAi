@@ -42,7 +42,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
             Text(
-              "Clude",
+              "Claude",
               style: GoogleFonts.cairo(
                 fontSize: 24,
                 color: Colors.deepPurple,

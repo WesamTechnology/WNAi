@@ -8,19 +8,36 @@ class Mylistview extends StatelessWidget {
   Mylistview({super.key});
 
   final List<CategoryModel> categories = [
-    CategoryModel(image: "images/continer/sport.jpg", name: "Sport"),
-    CategoryModel(
-      image: "images/continer/entertainment.jpg",
-      name: "Entertainment",
-    ),
-    CategoryModel(image: "images/continer/business.jpg", name: "Business"),
-    CategoryModel(image: "images/continer/health.jpg", name: "Health"),
-    CategoryModel(image: "images/continer/science.jpg", name: "Science"),
-    CategoryModel(image: "images/continer/technology.jpg", name: "Technology"),
-    CategoryModel(image: "images/continer/general.jpg", name: "General"),
+    CategoryModel(image: "images/continer/sport.jpg", name: "رياضة"),
+    CategoryModel(image: "images/continer/entertainment.jpg", name: "ترفيه"),
+    CategoryModel(image: "images/continer/business.jpg", name: "اقتصاد"),
+    CategoryModel(image: "images/continer/health.jpg", name: "صحة"),
+    CategoryModel(image: "images/continer/science.jpg", name: "علوم"),
+    CategoryModel(image: "images/continer/technology.jpg", name: "تكنولوجيا"),
+    CategoryModel(image: "images/continer/general.jpg", name: "عام"),
   ];
 
-  // List categoryNews removed as we use dynamic navigation
+  // Helper map to get API key from Arabic name
+  String getApiKey(String arabicName) {
+    switch (arabicName) {
+      case "رياضة":
+        return "sport";
+      case "ترفيه":
+        return "entertainment";
+      case "اقتصاد":
+        return "business";
+      case "صحة":
+        return "health";
+      case "علوم":
+        return "science";
+      case "تكنولوجيا":
+        return "technology";
+      case "عام":
+        return "general";
+      default:
+        return "general";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,15 +45,16 @@ class Mylistview extends StatelessWidget {
       height: 100,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
         itemCount: categories.length,
         itemBuilder: (context, i) {
           return InkWell(
             onTap: () {
-              // Extract category name for API (lowercase)
-              String categoryName = categories[i].name.toLowerCase();
-              if (categoryName == 'general') {
+              String categoryKey = getApiKey(categories[i].name);
+
+              if (categoryKey == 'general') {
                 Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => HomePage()),
+                  MaterialPageRoute(builder: (context) => const HomePage()),
                   (route) => false,
                 );
               } else {
@@ -44,7 +62,7 @@ class Mylistview extends StatelessWidget {
                   MaterialPageRoute(
                     builder:
                         (context) => CategoryPage(
-                          category: categoryName,
+                          category: categoryKey,
                           title: categories[i].name,
                         ),
                   ),

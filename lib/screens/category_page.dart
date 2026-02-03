@@ -29,7 +29,7 @@ class CategoryPage extends StatelessWidget {
               ),
             ),
             Text(
-              " News",
+              " اخبار",
               style: TextStyle(
                 fontSize: 18,
                 color: Colors.orange,
